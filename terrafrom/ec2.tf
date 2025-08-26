@@ -1,9 +1,9 @@
 # Bastion Host (Public Subnet)
 resource "aws_instance" "bastion" {
-  ami           = "ami-0c02fb55956c7d316"   # apne region ka Linux AMI use karo
-  instance_type = "t2.micro"
+  ami           = "ami-0360c520857e3138f"  
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.public_subnet.id
-  key_name      = "your-key-pair-name"      # SSH key pair ka naam
+  key_name      = "devops-key"      
   associate_public_ip_address = true
 
   tags = {
@@ -13,10 +13,10 @@ resource "aws_instance" "bastion" {
 
 # Application Server (Private Subnet)
 resource "aws_instance" "app_server" {
-  ami           = "ami-0c02fb55956c7d316"   # apne region ka Linux AMI use karo
-  instance_type = "t2.micro"
+  ami           = "ami-0360c520857e3138f"  
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.private_subnet.id
-  key_name      = "your-key-pair-name"      # SSH key pair ka naam
+  key_name      = "devops-key"     
 
   tags = {
     Name = "app-server"
