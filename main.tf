@@ -1,3 +1,15 @@
+terraform {
+  backend "s3" {
+    bucket       = "terraform-state-bucket-360783619044"
+    key          = "terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
+  }
+}
+
+
+
 provider "aws" {
   region = "us-east-1" 
 }
@@ -173,4 +185,36 @@ resource "aws_instance" "app" {
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   tags = { Name = "app-server" }
+}
+
+# S3 bucket for Terraform state
+resource "aws_s3_bucket" "tf_state" {
+  bucket = "terraform-state-bucket-360783619044"   # unique
+  acl    = "private"
+
+  versioning { enabled = true }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  tags = { Name = "TerraformState" }
+}
+
+# DynamoDB table for locking
+resource "aws_dynamodb_table" "tf_locks" {
+  name         = "terraform-locks"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = { Name = "TerraformLocks" }
 }
