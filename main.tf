@@ -10,6 +10,7 @@ terraform {
 
 
 
+
 provider "aws" {
   region = "us-east-1" 
 }
@@ -89,12 +90,13 @@ resource "aws_route_table_association" "private_assoc" {
 resource "aws_security_group" "bastion_sg" {
   vpc_id = aws_vpc.main.id
   name   = "bastion-sg"
+  
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["125.209.81.86/32"]
+    cidr_blocks = ["72.255.11.93/32"]
 
   }
 
@@ -172,6 +174,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+  key_name                    = "bastion-key" 
 
   tags = { Name = "bastion-host" }
 }
@@ -183,6 +186,8 @@ resource "aws_instance" "app" {
   subnet_id              = aws_subnet.private.id
   vpc_security_group_ids = [aws_security_group.app_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  key_name                    = "bastion-key" 
+
 
   tags = { Name = "app-server" }
 }
